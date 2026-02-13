@@ -60,7 +60,7 @@ export function LoginCard({ onLogin }: LoginCardProps) {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full mt-5">
               Start Quiz
             </Button>
           </CardFooter>
