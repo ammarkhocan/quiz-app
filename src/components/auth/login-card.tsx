@@ -41,6 +41,7 @@ export function LoginCard({ onLogin }: LoginCardProps) {
             Enter your name to start the challenge.
           </CardDescription>
         </CardHeader>
+
         <form onSubmit={handleSubmit}>
           <CardContent>
             <div className="grid w-full items-center gap-4">
@@ -54,7 +55,8 @@ export function LoginCard({ onLogin }: LoginCardProps) {
                     setName(e.target.value);
                     setError(false);
                   }}
-                  className={error ? "border-red-500" : ""}
+                  required
+                  className={error ? "border-red-500" : "isi"}
                 />
               </div>
             </div>
