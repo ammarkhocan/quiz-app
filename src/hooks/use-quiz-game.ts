@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { decodeHtml, shuffleArray } from "@/lib/quiz-helpers";
 import type { APIResponse, QuestionState } from "@/modules/quiz/type";
 
-const GAME_DURATION = 60;
+const GAME_DURATION = 300;
 const STORAGE_KEY = "quiz_game_state";
 
-export function useQuizGame() {
+export function useQuizGame(isEnabled: boolean = true) {
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
@@ -41,7 +41,6 @@ export function useQuizGame() {
       }));
 
       setQuestions(newQuestions);
-
       setTimeLeft(GAME_DURATION);
     } catch (error) {
       console.log("Error ambil data:", error);
@@ -70,7 +69,7 @@ export function useQuizGame() {
   }, []);
 
   useEffect(() => {
-    if (loading || isGameOver || questions.length === 0) return;
+    if (!isEnabled || loading || isGameOver || questions.length === 0) return;
 
     if (timeLeft <= 0) {
       setIsGameOver(true);
@@ -82,7 +81,7 @@ export function useQuizGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [loading, isGameOver, timeLeft, questions.length]);
+  }, [loading, isGameOver, timeLeft, questions.length, isEnabled]);
 
   useEffect(() => {
     if (questions.length > 0) {

@@ -20,7 +20,7 @@ export function App() {
     timeLeft,
     handleAnswer,
     restartGame,
-  } = useQuizGame();
+  } = useQuizGame(!!username);
 
   useEffect(() => {
     const saved = localStorage.getItem("quiz_user");
