@@ -36,10 +36,8 @@ export function LoginCard({ onLogin }: LoginCardProps) {
           <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
             <User className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle>Welcome Player!</CardTitle>
-          <CardDescription>
-            Enter your name to start the challenge.
-          </CardDescription>
+          <CardTitle>Let’s Get Started</CardTitle>
+          <CardDescription>Enter your name to start the Quiz.</CardDescription>
         </CardHeader>
 
         <form onSubmit={handleSubmit}>
@@ -49,7 +47,7 @@ export function LoginCard({ onLogin }: LoginCardProps) {
                 <Label htmlFor="name">Username</Label>
                 <Input
                   id="name"
-                  placeholder="e.g. Maverick"
+                  placeholder="John Doe"
                   value={name}
                   onChange={(e) => {
                     setName(e.target.value);
