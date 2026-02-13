@@ -1,73 +1,62 @@
-# React + TypeScript + Vite
+# React Quiz App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A web-based interactive quiz application built using **React**, **Vite**, and **TypeScript**. This application dynamically fetches trivia questions and features automatic progress persistence.
 
-Currently, two official plugins are available:
+## 🌐 Links
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Live Demo: **[Quiz App](https://quiz-app-animals.netlify.app/)**
 
-## React Compiler
+## 🚀 Key Features
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+- **Simple Login System:** Users simply enter their name to start the quiz session.
+- **API Integration:** Questions are fetched dynamically from the **[Open Trivia Database (OpenTDB)](https://opentdb.com/)**.
+  - _Configuration:_ 10 Multiple Choice questions (Animals category).
+- **Global Timer:** A countdown timer (default 60 seconds) for the entire quiz.
+- **Instant Navigation:** Automatically moves to the next question immediately after an answer is selected.
+- **Resume Progress (Auto-Save):** Uses `localStorage` to persist game state every second. If the browser is refreshed or closed accidentally, users can resume from the exact question and time remaining.
+- **Result Page:** Displays a statistical summary (Correct, Wrong, and Time Remaining) after the quiz ends.
 
-## Expanding the ESLint configuration
+## 🛠 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Core:** React, Vite
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **UI Components:** Shadcn UI
+- **Icons:** Lucide React
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 📦 How to Run Locally
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Follow these steps to run the code on your local machine:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1.  **Clone Repository**
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+    ```bash
+    git clone https://github.com/ammarkhocan/quiz-app.git
+    cd YOUR-FILE-NAME
+    ```
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+2.  **Install Dependencies**
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+    ```bash
+    npm install
+    ```
+
+3.  **Run Development Server**
+
+    ```bash
+    npm run dev
+    ```
+
+4.  **Access the App**
+    Open your browser and visit `http://localhost:5173`
+
+## 📂 Folder Structure
+
+```text
+src/
+├── components/    # UI Components (Login, Question, Result)
+├── hooks/         # Custom Hooks (Game Logic & Timer)
+├── lib/           # Helper Functions (Time Format, Shuffle)
+├── types/         # TypeScript Type Definitions
+└── App.tsx        # Main Entry Point
 ```
