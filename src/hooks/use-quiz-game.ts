@@ -1,28 +1,29 @@
-import { useState, useEffect, useCallback } from "react";
-
+import { useState, useEffect } from "react";
 import { decodeHtml, shuffleArray } from "@/lib/quiz-helpers";
 import type { APIResponse, QuestionState } from "@/modules/quiz/type";
 
-const GAME_DURATION = 60; // seconds
+const GAME_DURATION = 60;
+const STORAGE_KEY = "quiz_game_state";
 
 export function useQuizGame() {
   const [questions, setQuestions] = useState<QuestionState[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [wrong, setWrong] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [isGameOver, setIsGameOver] = useState(false);
   const [userAnswer, setUserAnswer] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(GAME_DURATION);
 
-  const fetchQuestions = useCallback(async () => {
-    setIsLoading(true);
+  const fetchQuestions = async () => {
+    setLoading(true);
     setIsGameOver(false);
     setScore(0);
     setWrong(0);
     setCurrentIndex(0);
     setUserAnswer(null);
-    setTimeLeft(GAME_DURATION);
+
+    localStorage.removeItem(STORAGE_KEY);
 
     try {
       const res = await fetch(
@@ -30,7 +31,7 @@ export function useQuizGame() {
       );
       const data: APIResponse = await res.json();
 
-      const formattedData = data.results.map((q) => ({
+      const newQuestions = data.results.map((q) => ({
         ...q,
         question: decodeHtml(q.question),
         correct_answer: decodeHtml(q.correct_answer),
@@ -39,20 +40,37 @@ export function useQuizGame() {
         ),
       }));
 
-      setQuestions(formattedData);
-    } catch (err) {
-      console.error("Failed to fetch questions", err);
+      setQuestions(newQuestions);
+
+      setTimeLeft(GAME_DURATION);
+    } catch (error) {
+      console.log("Error ambil data:", error);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (!parsed.isGameOver && parsed.timeLeft > 0) {
+        setQuestions(parsed.questions);
+        setCurrentIndex(parsed.currentIndex);
+        setScore(parsed.score);
+        setWrong(parsed.wrong);
+        setTimeLeft(parsed.timeLeft);
+        setLoading(false);
+        return;
+      }
+    }
+
+    fetchQuestions();
   }, []);
 
   useEffect(() => {
-    fetchQuestions();
-  }, [fetchQuestions]);
-
-  useEffect(() => {
-    if (isLoading || isGameOver) return;
+    if (loading || isGameOver || questions.length === 0) return;
 
     if (timeLeft <= 0) {
       setIsGameOver(true);
@@ -64,21 +82,43 @@ export function useQuizGame() {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isLoading, isGameOver, timeLeft]);
+  }, [loading, isGameOver, timeLeft, questions.length]);
+
+  useEffect(() => {
+    if (questions.length > 0) {
+      const stateToSave = {
+        questions,
+        currentIndex,
+        score,
+        wrong,
+        timeLeft,
+        isGameOver,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
+    }
+
+    if (isGameOver) {
+      localStorage.removeItem(STORAGE_KEY);
+    }
+  }, [questions, currentIndex, score, wrong, timeLeft, isGameOver]);
 
   const handleAnswer = (answer: string) => {
     if (userAnswer) return;
 
     setUserAnswer(answer);
-    const isCorrect = answer === questions[currentIndex].correct_answer;
 
-    if (isCorrect) setScore((s) => s + 1);
-    else setWrong((w) => w + 1);
+    const currentQ = questions[currentIndex];
+    if (answer === currentQ.correct_answer) {
+      setScore(score + 1);
+    } else {
+      setWrong(wrong + 1);
+    }
 
     setTimeout(() => {
       if (timeLeft <= 0) return;
 
       const nextIndex = currentIndex + 1;
+
       if (nextIndex < questions.length) {
         setCurrentIndex(nextIndex);
         setUserAnswer(null);
@@ -89,20 +129,16 @@ export function useQuizGame() {
   };
 
   return {
-    gameState: {
-      questions,
-      currentQuestion: questions[currentIndex],
-      currentIndex,
-      score,
-      wrong,
-      isLoading,
-      isGameOver,
-      userAnswer,
-      timeLeft,
-    },
-    actions: {
-      handleAnswer,
-      restartGame: fetchQuestions,
-    },
+    questions,
+    currentQuestion: questions[currentIndex],
+    currentIndex,
+    score,
+    wrong,
+    loading,
+    isGameOver,
+    userAnswer,
+    timeLeft,
+    handleAnswer,
+    restartGame: fetchQuestions,
   };
 }
